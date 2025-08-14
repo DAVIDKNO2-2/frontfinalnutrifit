@@ -4,6 +4,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ForgotUsername from "./pages/ForgotUsername";
+import Entrenadores from "./pages/Entrenadores";
+import Rutinas from "./pages/Rutinas";
+import Alimentacion from "./pages/Alimentacion";
+import BuscarEjercicios from "./pages/BuscarEjercicios";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -16,6 +24,14 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/forgot-username" element={<ForgotUsername />} />
+          <Route path="/entrenadores" element={<Entrenadores />} />
+          <Route path="/rutinas" element={<Rutinas />} />
+          <Route path="/alimentacion" element={<Alimentacion />} />
+          <Route path="/buscar-ejercicios" element={<BuscarEjercicios />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
