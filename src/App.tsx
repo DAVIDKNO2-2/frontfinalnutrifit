@@ -13,6 +13,7 @@ import Rutinas from "./pages/Rutinas";
 import Alimentacion from "./pages/Alimentacion";
 import BuscarEjercicios from "./pages/BuscarEjercicios";
 import NotFound from "./pages/NotFound";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/forgot-username" element={<ForgotUsername />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/entrenadores" element={<Entrenadores />} />
           <Route path="/rutinas" element={<Rutinas />} />
           <Route path="/alimentacion" element={<Alimentacion />} />

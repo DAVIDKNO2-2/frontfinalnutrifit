@@ -3,12 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, Apple, Calendar, Plus, Eye, Clock } from "lucide-react";
+import { ArrowLeft, Apple, Plus, Trash2 } from "lucide-react"; // Se agregó Trash2 para el ícono de eliminar
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface Comida {
-  id: number;
   tipo: string;
   hora?: string;
   descripcion: string;
@@ -20,7 +21,6 @@ interface Alimentacion {
   descripcion?: string;
   fechaInicio: string;
   fechaFin: string;
-  creadoEn: string;
   comidas: Comida[];
 }
 
@@ -29,7 +29,16 @@ const Alimentacion = () => {
   const { toast } = useToast();
   const [planes, setPlanes] = useState<Alimentacion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedPlan, setSelectedPlan] = useState<Alimentacion | null>(null);
+
+  // Estado para crear nuevo plan
+  const [newPlan, setNewPlan] = useState({
+    nombre: "",
+    descripcion: "",
+    fechaInicio: "",
+    fechaFin: "",
+    comidas: [] as Comida[],
+  });
+  const [newComida, setNewComida] = useState<Comida>({ tipo: "", hora: "", descripcion: "" });
 
   useEffect(() => {
     fetchPlanes();
@@ -37,229 +46,158 @@ const Alimentacion = () => {
 
   const fetchPlanes = async () => {
     try {
-      // TODO: Implementar fetch al backend /api/alimentacion
-      const response = await fetch('/api/alimentacion');
-      if (response.ok) {
-        const data = await response.json();
-        setPlanes(data);
+      const res = await fetch("http://localhost:3010/api/alimentacion");
+      if (res.ok) {
+        setPlanes(await res.json());
       } else {
-        toast({
-          title: "Error",
-          description: "No se pudieron cargar los planes de alimentación",
-          variant: "destructive",
-        });
+        toast({ title: "Error", description: "No se pudieron cargar los planes", variant: "destructive" });
       }
-    } catch (error) {
-      toast({
-        title: "Error de conexión",
-        description: "No se pudo conectar con el servidor",
-        variant: "destructive",
-      });
+    } catch {
+      toast({ title: "Error de conexión", description: "No se pudo conectar con el servidor", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  const handleAddComida = () => {
+    if (!newComida.tipo || !newComida.descripcion) return;
+    setNewPlan({ ...newPlan, comidas: [...newPlan.comidas, newComida] });
+    setNewComida({ tipo: "", hora: "", descripcion: "" });
   };
 
-  const getDaysRemaining = (fechaFin: string) => {
-    const today = new Date();
-    const endDate = new Date(fechaFin);
-    const diffTime = endDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-
-  const groupComidasByTipo = (comidas: Comida[]) => {
-    return comidas.reduce((acc, comida) => {
-      if (!acc[comida.tipo]) {
-        acc[comida.tipo] = [];
+  const handleCreatePlan = async () => {
+    try {
+      const res = await fetch("http://localhost:3010/api/alimentacion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newPlan),
+      });
+      if (res.ok) {
+        toast({ title: "Plan creado correctamente" });
+        fetchPlanes();
+      } else {
+        toast({ title: "Error", description: "No se pudo crear el plan", variant: "destructive" });
       }
-      acc[comida.tipo].push(comida);
-      return acc;
-    }, {} as Record<string, Comida[]>);
+    } catch {
+      toast({ title: "Error de conexión", description: "No se pudo conectar con el servidor", variant: "destructive" });
+    }
   };
+  
+  // Nuevo manejador para eliminar un plan
+  const handleDeletePlan = async (id: number) => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este plan?")) {
+      try {
+        const res = await fetch(`http://localhost:3010/api/alimentacion/${id}`, {
+          method: "DELETE",
+        });
+        if (res.ok) {
+          toast({ title: "Plan eliminado correctamente" });
+          fetchPlanes(); // Vuelve a cargar la lista de planes
+        } else {
+          toast({ title: "Error", description: "No se pudo eliminar el plan", variant: "destructive" });
+        }
+      } catch {
+        toast({ title: "Error de conexión", description: "No se pudo conectar con el servidor", variant: "destructive" });
+      }
+    }
+  };
+
 
   return (
-    <div className="min-h-screen bg-gym-light">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/")}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver al inicio
-          </Button>
-          
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-4xl font-bold text-secondary mb-4">Planes de Alimentación</h1>
-              <p className="text-muted-foreground text-lg">
-                Planes nutricionales balanceados diseñados para complementar tu entrenamiento
-              </p>
-            </div>
+    <div className="container mx-auto px-4 py-8">
+      <Button variant="outline" onClick={() => navigate("/")} className="mb-4">
+        <ArrowLeft className="w-4 h-4 mr-2" /> Volver al inicio
+      </Button>
+
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold text-secondary">Planes de Alimentación</h1>
+        <Dialog>
+          <DialogTrigger asChild>
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo Plan
+              <Plus className="w-4 h-4 mr-2" /> Nuevo Plan
             </Button>
-          </div>
-        </div>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Crear nuevo plan</DialogTitle>
+            </DialogHeader>
 
-        {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-6">
-                  <div className="h-20 bg-muted rounded mb-4"></div>
-                  <div className="h-4 bg-muted rounded mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-3/4"></div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : planes.length === 0 ? (
-          <Card className="text-center p-8">
-            <CardContent>
-              <Apple className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">No hay planes disponibles</h3>
-              <p className="text-muted-foreground mb-4">
-                Aún no se han creado planes de alimentación en la plataforma
-              </p>
-              <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                <Plus className="w-4 h-4 mr-2" />
-                Crear Primer Plan
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {planes.map((plan) => {
-              const daysRemaining = getDaysRemaining(plan.fechaFin);
-              const isActive = daysRemaining > 0;
-              
-              return (
-                <Card key={plan.id} className="hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Apple className="h-5 w-5 text-primary" />
-                      <Badge 
-                        variant={isActive ? "default" : "secondary"} 
-                        className="text-xs"
-                      >
-                        {isActive ? `${daysRemaining} días restantes` : "Finalizado"}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-xl">{plan.nombre}</CardTitle>
-                    <CardDescription className="line-clamp-2">
-                      {plan.descripcion || "Plan nutricional personalizado"}
-                    </CardDescription>
-                  </CardHeader>
+            <div className="space-y-3">
+              <div>
+                <Label>Nombre</Label>
+                <Input value={newPlan.nombre} onChange={(e) => setNewPlan({ ...newPlan, nombre: e.target.value })} />
+              </div>
+              <div>
+                <Label>Descripción</Label>
+                <Input value={newPlan.descripcion} onChange={(e) => setNewPlan({ ...newPlan, descripcion: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label>Fecha inicio</Label>
+                  <Input type="date" value={newPlan.fechaInicio} onChange={(e) => setNewPlan({ ...newPlan, fechaInicio: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Fecha fin</Label>
+                  <Input type="date" value={newPlan.fechaFin} onChange={(e) => setNewPlan({ ...newPlan, fechaFin: e.target.value })} />
+                </div>
+              </div>
 
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      <span>
-                        {formatDate(plan.fechaInicio)} - {formatDate(plan.fechaFin)}
-                      </span>
-                    </div>
+              {/* Tabla de comidas */}
+              <div className="border p-3 rounded-md">
+                <h4 className="font-semibold mb-2">Comidas</h4>
+                {newPlan.comidas.length > 0 && (
+                  <ul className="mb-3 list-disc pl-4">
+                    {newPlan.comidas.map((c, i) => (
+                      <li key={i}>{c.tipo} - {c.hora} - {c.descripcion}</li>
+                    ))}
+                  </ul>
+                )}
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  <Input placeholder="Tipo" value={newComida.tipo} onChange={(e) => setNewComida({ ...newComida, tipo: e.target.value })} />
+                  <Input type="time" value={newComida.hora} onChange={(e) => setNewComida({ ...newComida, hora: e.target.value })} />
+                  <Input placeholder="Descripción" value={newComida.descripcion} onChange={(e) => setNewComida({ ...newComida, descripcion: e.target.value })} />
+                </div>
+                <Button variant="outline" size="sm" onClick={handleAddComida}>Agregar comida</Button>
+              </div>
 
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-sm">Comidas incluidas:</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {Array.from(new Set(plan.comidas.map(c => c.tipo))).map((tipo) => (
-                          <Badge key={tipo} variant="outline" className="text-xs">
-                            {tipo}
-                          </Badge>
-                        ))}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        Total: {plan.comidas.length} comidas programadas
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 pt-4">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button 
-                            variant="outline" 
-                            className="flex-1"
-                            onClick={() => setSelectedPlan(plan)}
-                          >
-                            <Eye className="w-4 h-4 mr-2" />
-                            Ver Detalles
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle className="text-2xl">{selectedPlan?.nombre}</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-6">
-                            {selectedPlan?.descripcion && (
-                              <div>
-                                <h3 className="font-semibold mb-2">Descripción</h3>
-                                <p className="text-muted-foreground">{selectedPlan.descripcion}</p>
-                              </div>
-                            )}
-                            
-                            <div className="grid md:grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <strong>Fecha de inicio:</strong> {selectedPlan && formatDate(selectedPlan.fechaInicio)}
-                              </div>
-                              <div>
-                                <strong>Fecha de fin:</strong> {selectedPlan && formatDate(selectedPlan.fechaFin)}
-                              </div>
-                            </div>
-                            
-                            {selectedPlan && (
-                              <div>
-                                <h3 className="font-semibold mb-4">Plan de Comidas</h3>
-                                <div className="space-y-4">
-                                  {Object.entries(groupComidasByTipo(selectedPlan.comidas)).map(([tipo, comidas]) => (
-                                    <Card key={tipo}>
-                                      <CardHeader className="pb-3">
-                                        <CardTitle className="text-lg text-primary">{tipo}</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="space-y-3">
-                                        {comidas.map((comida) => (
-                                          <div key={comida.id} className="border-l-2 border-primary/20 pl-4">
-                                            {comida.hora && (
-                                              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                                                <Clock className="h-3 w-3" />
-                                                <span>{comida.hora}</span>
-                                              </div>
-                                            )}
-                                            <p className="text-sm">{comida.descripcion}</p>
-                                          </div>
-                                        ))}
-                                      </CardContent>
-                                    </Card>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      
-                      <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-                        {isActive ? "Seguir Plan" : "Ver Histórico"}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+              <Button className="w-full" onClick={handleCreatePlan}>Guardar Plan</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {/* Lista de planes existentes */}
+      {isLoading ? (
+        <p>Cargando...</p>
+      ) : planes.length === 0 ? (
+        <p>No hay planes creados</p>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {planes.map((plan) => (
+            <Card key={plan.id}>
+              <CardHeader>
+                <Apple className="h-5 w-5 text-primary" />
+                <CardTitle>{plan.nombre}</CardTitle>
+                <CardDescription>{plan.descripcion}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2">
+                <Badge>{plan.comidas.length} comidas</Badge>
+                <p>{plan.fechaInicio} - {plan.fechaFin}</p>
+                <div className="mt-4 flex justify-end">
+                    {/* Botón de eliminar */}
+                    <Button 
+                        variant="destructive" 
+                        size="sm" 
+                        onClick={() => handleDeletePlan(plan.id)}
+                    >
+                        <Trash2 className="w-4 h-4 mr-2" /> Eliminar
+                    </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

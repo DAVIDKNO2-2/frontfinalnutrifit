@@ -22,20 +22,23 @@ const Login = () => {
 
     try {
       // TODO: Implementar fetch al backend /api/login
-      const response = await fetch('/api/login', {
+      const response = await fetch('http://localhost:3010/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
+      }).then(res => res.json())
+    ;
+      console.log(response.data);
+      if (response.data) {
+        localStorage.setItem("usuario", JSON.stringify(response.data));
         toast({
           title: "Inicio de sesión exitoso",
           description: "Bienvenido de vuelta",
         });
-        navigate("/dashboard");
+        navigate("/");
+        location.reload();
       } else {
         const error = await response.text();
         toast({

@@ -13,24 +13,21 @@ const ForgotUsername = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
-      // TODO: Implementar fetch al backend /api/recuperar-usuario
-      const response = await fetch('/api/recuperar-usuario', {
+      const response = await fetch('http://localhost:3010/api//recuperar-usuario', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email }),
       });
-
       if (response.ok) {
         toast({
-          title: "Correo enviado",
-          description: "Te enviamos tu nombre de usuario al correo",
+          title: "Usuario enviado",
+          description: "Se ha enviado tu nombre de usuario al correo proporcionado",
         });
       } else {
         const error = await response.text();
@@ -62,12 +59,11 @@ const ForgotUsername = () => {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver al login
         </Button>
-
         <Card className="shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-primary">Recuperar Usuario</CardTitle>
             <CardDescription>
-              Te enviaremos tu nombre de usuario al correo
+              Te enviaremos tu nombre de usuario al correo proporcionado
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -87,13 +83,12 @@ const ForgotUsername = () => {
                   />
                 </div>
               </div>
-
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={isLoading}
               >
-                {isLoading ? "Enviando..." : "Recuperar Usuario"}
+                {isLoading ? "Enviando..." : "Enviar Usuario"}
               </Button>
             </form>
           </CardContent>

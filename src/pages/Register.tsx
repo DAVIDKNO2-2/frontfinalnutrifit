@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, Lock, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { API_BASE_URL } from "@/lib/constants";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,7 +16,8 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    tipoUsuario: ""
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,18 +36,22 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Implementar fetch al backend /api/register
-      const response = await fetch('/api/register', {
+  // Consumir la API local para registro
+  const info = {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          rol: formData.tipoUsuario
+        }
+  const response = await fetch(`${API_BASE_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password
-        }),
+        body: JSON.stringify(info),
       });
+
+      localStorage.setItem("usuario", JSON.stringify(info));
 
       if (response.ok) {
         toast({
@@ -92,6 +99,18 @@ const Register = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="tipoUsuario">Tipo de usuario</Label>
+                <Select value={formData.tipoUsuario} onValueChange={value => setFormData({ ...formData, tipoUsuario: value })}>
+                  <SelectTrigger id="tipoUsuario">
+                    <SelectValue placeholder="Selecciona una opción" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ENTRENADOR">ENTRENADOR</SelectItem>
+                    <SelectItem value="CLIENTE">CLIENTE</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Nombre Completo</Label>
                 <div className="relative">

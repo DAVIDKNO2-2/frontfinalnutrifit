@@ -18,8 +18,8 @@ const ForgotPassword = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Implementar fetch al backend /api/recuperar-contrasena
-      const response = await fetch('/api/recuperar-contrasena', {
+      // Consumir la API local para recuperación de contraseña
+      const response = await fetch('http://localhost:3010/api/recuperar-contrasena', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,6 +32,10 @@ const ForgotPassword = () => {
           title: "Correo enviado",
           description: "Se ha enviado un enlace de recuperación a tu correo",
         });
+        // Redirigir a la vista de restablecer contraseña
+        setTimeout(() => {
+          navigate("/reset-password");
+        }, 1500);
       } else {
         const error = await response.text();
         toast({

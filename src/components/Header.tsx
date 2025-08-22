@@ -8,9 +8,9 @@ const Header = () => {
   return (
     <header className="bg-secondary text-secondary-foreground shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate("/")}>
-          <Dumbbell className="h-8 w-8 text-primary" />
-          <h1 className="text-2xl font-bold text-primary">GymFit</h1>
+        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => navigate("/")}> 
+          <Dumbbell className="h-8 w-8 text-red-600 stroke-black" style={{ strokeWidth: 2 }} />
+          <h1 className="text-2xl font-extrabold text-red-600 border-2 border-black rounded px-2 py-0.5 shadow-md">NUTRIFIT</h1>
         </div>
 
         <div className="flex items-center space-x-4">

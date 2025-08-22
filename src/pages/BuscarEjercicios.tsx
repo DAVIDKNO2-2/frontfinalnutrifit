@@ -17,9 +17,9 @@ interface Ejercicio {
 }
 
 const categorias = [
-  "TODAS_LAS_PARTES",
+  "ALL_PARTS",
   "BACK",
-  "CARDIO", 
+  "CARDIO",
   "CHEST",
   "LOWER_ARMS",
   "LOWER_LEGS",
@@ -31,17 +31,17 @@ const categorias = [
 ];
 
 const categoriasNames: Record<string, string> = {
-  "TODAS_LAS_PARTES": "Todas las Partes",
-  "BACK": "Espalda",
+  "ALL_PARTS": "All Parts",
+  "BACK": "Back",
   "CARDIO": "Cardio",
-  "CHEST": "Pecho",
-  "LOWER_ARMS": "Antebrazos",
-  "LOWER_LEGS": "Piernas (Inferior)",
-  "NECK": "Cuello",
-  "SHOULDERS": "Hombros",
-  "UPPER_ARMS": "Brazos (Superior)",
-  "UPPER_LEGS": "Piernas (Superior)",
-  "WAIST": "Cintura"
+  "CHEST": "Chest",
+  "LOWER_ARMS": "Lower Arms",
+  "LOWER_LEGS": "Lower Legs",
+  "NECK": "Neck",
+  "SHOULDERS": "Shoulders",
+  "UPPER_ARMS": "Upper Arms",
+  "UPPER_LEGS": "Upper Legs",
+  "WAIST": "Waist"
 };
 
 const BuscarEjercicios = () => {
@@ -51,7 +51,7 @@ const BuscarEjercicios = () => {
   const [filteredEjercicios, setFilteredEjercicios] = useState<Ejercicio[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategoria, setSelectedCategoria] = useState("TODAS_LAS_PARTES");
+  const [selectedCategoria, setSelectedCategoria] = useState("ALL_PARTS");
 
   useEffect(() => {
     fetchEjercicios();
@@ -86,8 +86,9 @@ const BuscarEjercicios = () => {
     }
   };
 
+
   const fetchEjerciciosByCategoria = async (categoria: string) => {
-    if (categoria === "TODAS_LAS_PARTES") {
+    if (categoria === "ALL_PARTS") {
       setFilteredEjercicios(ejercicios.filter(ejercicio => 
         ejercicio.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
         ejercicio.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
@@ -97,8 +98,8 @@ const BuscarEjercicios = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Implementar fetch al backend /api/ejerciciosbusqueda/:categoria
-      const response = await fetch(`/api/ejerciciosbusqueda/${categoria}`);
+  // Consumir la API local para ejercicios por categoría
+  const response = await fetch(`http://localhost:3010/api/ejerciciosbusqueda/${categoria}`);
       if (response.ok) {
         const data = await response.json();
         setFilteredEjercicios(data.filter((ejercicio: Ejercicio) => 
@@ -255,37 +256,20 @@ const BuscarEjercicios = () => {
           </Card>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEjercicios.map((ejercicio) => (
+            {filteredEjercicios.filter(ejercicio => ejercicio.url).map((ejercicio) => (
               <Card key={ejercicio.id} className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Dumbbell className="h-5 w-5 text-primary" />
-                    <Badge className={getCategoriaColor(ejercicio.categoria)}>
-                      {categoriasNames[ejercicio.categoria]}
-                    </Badge>
-                  </div>
                   <CardTitle className="text-xl">{ejercicio.nombre}</CardTitle>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <CardDescription className="line-clamp-3">
-                    {ejercicio.descripcion}
-                  </CardDescription>
-
-                  <div className="flex gap-2 pt-4">
-                    <Button 
-                      variant="outline" 
-                      className="flex-1"
-                      onClick={() => window.open(ejercicio.url, '_blank')}
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Ver Tutorial
-                    </Button>
-                    
-                    <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90">
-                      Agregar a Rutina
-                    </Button>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge>{categoriasNames[ejercicio.categoria] || ejercicio.categoria}</Badge>
                   </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-center mb-2">
+              
+                    <img src={`http://localhost:3010/${ejercicio.url}`} alt={ejercicio.nombre} className="max-h-40 object-contain rounded" />
+                  </div>
+                  <CardDescription>{ejercicio.descripcion}</CardDescription>
                 </CardContent>
               </Card>
             ))}

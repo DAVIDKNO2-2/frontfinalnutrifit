@@ -33,8 +33,8 @@ const Entrenadores = () => {
 
   const fetchEntrenadores = async () => {
     try {
-      // TODO: Implementar fetch al backend /api/entrenadortodos
-      const response = await fetch('/api/entrenadortodos');
+  // Consumir la API local para entrenadores
+  const response = await fetch('http://localhost:3010/api/entrenadortodos');
       if (response.ok) {
         const data = await response.json();
         setEntrenadores(data);
