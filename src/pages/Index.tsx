@@ -32,6 +32,8 @@ const Index = () => {
               Plataforma integral de fitness con entrenadores especializados,
               rutinas personalizadas y planes de alimentación diseñados para tu éxito.
             </p>
+            {/* Botón "Comenzar Ahora" removido */}
+            {/*
             <Button 
               size="lg" 
               className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6"
@@ -39,6 +41,7 @@ const Index = () => {
               Comenzar Ahora
               <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
+            */}
           </div>
         </div>
       </section>
@@ -84,31 +87,6 @@ const Index = () => {
               icon={Search}
               route="/buscar-ejercicios"
             />
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-16 bg-gradient-to-r from-primary to-gym-orange text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">¿Listo para comenzar tu transformación?</h2>
-          <p className="text-xl mb-8 opacity-90">
-            Únete a miles de personas que ya están alcanzando sus metas fitness
-          </p>
-          <div className="space-x-4">
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="bg-white/10 text-white border-white/30 hover:bg-white/20"
-            >
-              Ver Entrenadores
-            </Button>
-            <Button 
-              size="lg"
-              className="bg-white text-primary hover:bg-white/90"
-            >
-              Crear Cuenta Gratis
-            </Button>
           </div>
         </div>
       </section>

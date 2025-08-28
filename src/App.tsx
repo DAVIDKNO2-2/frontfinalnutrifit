@@ -14,6 +14,7 @@ import Alimentacion from "./pages/Alimentacion";
 import BuscarEjercicios from "./pages/BuscarEjercicios";
 import NotFound from "./pages/NotFound";
 import ResetPassword from "./pages/ResetPassword";
+import PerfilUsuario from "./pages/PerfilUsuario";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
           <Route path="/rutinas" element={<Rutinas />} />
           <Route path="/alimentacion" element={<Alimentacion />} />
           <Route path="/buscar-ejercicios" element={<BuscarEjercicios />} />
+          <Route path="/perfilusuario" element={<PerfilUsuario />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

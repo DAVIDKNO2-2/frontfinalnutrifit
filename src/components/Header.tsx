@@ -29,6 +29,13 @@ const Header = () => {
             <User className="w-4 h-4 mr-2" />
             Registrarse
           </Button>
+          <div
+            className="ml-2 cursor-pointer flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 border-2 border-primary hover:shadow-lg transition"
+            onClick={() => navigate("/perfilusuario")}
+            title="Perfil de usuario"
+          >
+            <User className="w-6 h-6 text-primary" />
+          </div>
         </div>
       </div>
     </header>

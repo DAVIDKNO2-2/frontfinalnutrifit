@@ -27,10 +27,105 @@ const Entrenadores = () => {
   const [entrenadores, setEntrenadores] = useState<Entrenador[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Datos quemados de entrenadores para mostrar en el frontend
+  const dummyEntrenadores: Entrenador[] = [
+    {
+      id: 1,
+      nombreCompleto: "Ana García",
+      fotoPerfil: "https://via.placeholder.com/150/FF6347/FFFFFF?text=AG",
+      edad: 28,
+      telefono: "+34 600 123 456",
+      ciudad: "Madrid",
+      pais: "España",
+      biografia: "Entrenadora personal con 8 años de experiencia, especializada en entrenamiento de fuerza y pérdida de peso. Ayudo a mis clientes a alcanzar sus metas de forma efectiva y sostenible.",
+      nivelAcademico: "Licenciatura en Ciencias del Deporte",
+      certificaciones: "NSCA-CPT, Especialista en Nutrición Deportiva",
+      aniosExperiencia: 8,
+      especialidades: "Fuerza, Pérdida de Peso, HIIT",
+    },
+    {
+      id: 2,
+      nombreCompleto: "Carlos Rodríguez",
+      fotoPerfil: "https://via.placeholder.com/150/4682B4/FFFFFF?text=CR",
+      edad: 35,
+      telefono: "+34 611 987 654",
+      ciudad: "Barcelona",
+      pais: "España",
+      biografia: "Experto en culturismo y preparación física. Con 15 años de trayectoria, he guiado a numerosos atletas a competiciones exitosas. Mi enfoque es la disciplina y la técnica perfecta.",
+      nivelAcademico: "Grado Superior en Acondicionamiento Físico",
+      certificaciones: "IFBB Pro, Entrenador de Culturismo",
+      aniosExperiencia: 15,
+      especialidades: "Culturismo, Aumento de Masa Muscular, Preparación para Competición",
+    },
+    {
+      id: 3,
+      nombreCompleto: "Sofía López",
+      fotoPerfil: "https://via.placeholder.com/150/3CB371/FFFFFF?text=SL",
+      edad: 30,
+      telefono: "+34 622 345 678",
+      ciudad: "Valencia",
+      pais: "España",
+      biografia: "Entrenadora holística, fusiono el entrenamiento físico con el bienestar mental. Mis 10 años de experiencia me permiten crear planes personalizados para una vida equilibrada.",
+      nivelAcademico: "Máster en Psicología del Deporte",
+      certificaciones: "Yoga Alliance RYT-200, Coach de Bienestar",
+      aniosExperiencia: 10,
+      especialidades: "Yoga, Pilates, Bienestar, Flexibilidad",
+    },
+    {
+      id: 4,
+      nombreCompleto: "Juan Pérez",
+      fotoPerfil: "https://via.placeholder.com/150/FFD700/000000?text=JP",
+      edad: 40,
+      telefono: "+34 633 789 012",
+      ciudad: "Sevilla",
+      pais: "España",
+      biografia: "Especialista en entrenamiento funcional y rehabilitación. Ayudo a mis clientes a recuperar la movilidad y fuerza después de lesiones, con un enfoque seguro y progresivo.",
+      nivelAcademico: "Fisioterapeuta y Entrenador Deportivo",
+      certificaciones: "Certificación en Entrenamiento Funcional, Kinesiotaping",
+      aniosExperiencia: 18,
+      especialidades: "Rehabilitación, Entrenamiento Funcional, Tercera Edad",
+    },
+    {
+      id: 5,
+      nombreCompleto: "María Fernández",
+      fotoPerfil: "https://via.placeholder.com/150/DA70D6/FFFFFF?text=MF",
+      edad: 25,
+      telefono: "+34 644 102 304",
+      ciudad: "Bilbao",
+      pais: "España",
+      biografia: "Joven y dinámica entrenadora, apasionada por el fitness y la vida saludable. Mi objetivo es motivar a mis clientes a través de rutinas divertidas y desafiantes para alcanzar su mejor versión.",
+      nivelAcademico: "Técnico en Actividades Físicas y Deportivas",
+      certificaciones: "Zumba Instructor, TRX Certified",
+      aniosExperiencia: 5,
+      especialidades: "Fitness Grupal, Cardio, Tonificación, Zumba",
+    },
+    {
+      id: 6,
+      nombreCompleto: "Pedro Sánchez",
+      fotoPerfil: "https://via.placeholder.com/150/87CEFA/FFFFFF?text=PS",
+      edad: 32,
+      telefono: "+34 655 432 109",
+      ciudad: "Zaragoza",
+      pais: "España",
+      biografia: "Entrenador de alto rendimiento y preparador físico para deportes específicos. Con 12 años de experiencia, maximizo el potencial atlético de mis clientes para superar límites.",
+      nivelAcademico: "Grado en Ciencias de la Actividad Física y del Deporte",
+      certificaciones: "Certificación en Entrenamiento de Alto Rendimiento, Levantamiento Olímpico",
+      aniosExperiencia: 12,
+      especialidades: "Deportes de Equipo, Resistencia, Potencia, Crossfit",
+    },
+  ];
+
   useEffect(() => {
-    fetchEntrenadores();
+    // Simular la carga de datos con un retardo para mostrar el estado de carga
+    const timer = setTimeout(() => {
+      setEntrenadores(dummyEntrenadores);
+      setIsLoading(false);
+    }, 1000); // Retardo de 1 segundo
+    return () => clearTimeout(timer);
   }, []);
 
+  // Removido: fetchEntrenadores ya no es necesario
+  /*
   const fetchEntrenadores = async () => {
     try {
   // Consumir la API local para entrenadores
@@ -55,6 +150,7 @@ const Entrenadores = () => {
       setIsLoading(false);
     }
   };
+  */
 
   return (
     <div className="min-h-screen bg-gym-light">

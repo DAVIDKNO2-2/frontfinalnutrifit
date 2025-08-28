@@ -21,17 +21,26 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // TODO: Implementar fetch al backend /api/login
-      const response = await fetch('http://localhost:3010/api/login', {
+      const res = await fetch('http://localhost:3010/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-      }).then(res => res.json())
-    ;
-      console.log(response.data);
-      if (response.data) {
+      });
+      if (!res.ok) {
+        // Si el backend responde con error (ej: 401), mostrar mensaje
+        const errorMsg = await res.text();
+        toast({
+          title: "Contraseña incorrecta",
+          description: "La contraseña no es correcta. Intente de nuevo o vaya a 'Olvidé mi contraseña'.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+      const response = await res.json();
+      if (response && response.data) {
         localStorage.setItem("usuario", JSON.stringify(response.data));
         toast({
           title: "Inicio de sesión exitoso",
@@ -40,10 +49,9 @@ const Login = () => {
         navigate("/");
         location.reload();
       } else {
-        const error = await response.text();
         toast({
-          title: "Error",
-          description: error,
+          title: "Contraseña incorrecta",
+          description: "La contraseña no es correcta. Intente de nuevo o vaya a 'Olvidé mi contraseña'.",
           variant: "destructive",
         });
       }

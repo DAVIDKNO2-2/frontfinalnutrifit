@@ -16,14 +16,15 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
     tipoUsuario: ""
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    // Removida la validación de confirmación de contraseña
+    /*
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "Error",
@@ -32,28 +33,27 @@ const Register = () => {
       });
       return;
     }
+    */
 
     setIsLoading(true);
 
     try {
-  // Consumir la API local para registro
-  const info = {
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          rol: formData.tipoUsuario
-        }
-  const response = await fetch(`${API_BASE_URL}/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const info = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        rol: formData.tipoUsuario // Se envía con el nombre esperado en backend
+      };
+
+      const response = await fetch(`http://localhost:3010/api/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(info),
       });
 
-      localStorage.setItem("usuario", JSON.stringify(info));
-
       if (response.ok) {
+        const userResponse = await response.json();
+        localStorage.setItem("usuario", JSON.stringify(userResponse.usuario));
         toast({
           title: "Registro exitoso",
           description: "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.",
@@ -81,27 +81,19 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-gym-light flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <Button
-          variant="outline"
-          onClick={() => navigate("/")}
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Volver al inicio
+        <Button variant="outline" onClick={() => navigate("/")} className="mb-4">
+          <ArrowLeft className="w-4 h-4 mr-2" /> Volver al inicio
         </Button>
-
         <Card className="shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-primary">Registro</CardTitle>
-            <CardDescription>
-              Crea tu cuenta en GymFit
-            </CardDescription>
+            <CardDescription>Crea tu cuenta en GymFit</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="tipoUsuario">Tipo de usuario</Label>
-                <Select value={formData.tipoUsuario} onValueChange={value => setFormData({ ...formData, tipoUsuario: value })}>
+                <Select value={formData.tipoUsuario} onValueChange={(value) => setFormData({ ...formData, tipoUsuario: value })}>
                   <SelectTrigger id="tipoUsuario">
                     <SelectValue placeholder="Selecciona una opción" />
                   </SelectTrigger>
@@ -126,7 +118,6 @@ const Register = () => {
                   />
                 </div>
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="email">Correo Electrónico</Label>
                 <div className="relative">
@@ -142,7 +133,6 @@ const Register = () => {
                   />
                 </div>
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="password">Contraseña</Label>
                 <div className="relative">
@@ -158,39 +148,17 @@ const Register = () => {
                   />
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    className="pl-10"
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    required
-                  />
-                </div>
-              </div>
-
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                 disabled={isLoading}
               >
                 {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
               </Button>
             </form>
-
             <div className="mt-6 text-center">
               <span className="text-muted-foreground">¿Ya tienes cuenta? </span>
-              <Button
-                variant="link"
-                onClick={() => navigate("/login")}
-                className="text-primary p-0"
-              >
+              <Button variant="link" onClick={() => navigate("/login")} className="text-primary p-0">
                 Inicia sesión aquí
               </Button>
             </div>
